@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+{% block extrastatic %}
+<link rel="stylesheet" href="{% static 'css/bootstrap-datepicker.standalone.css' %}">
+{% endblock %}
+{% block content %}
+    <!-- For demo purpose -->
+    <div class="content" style="padding-top: 15px;">
+      <div class="col-md-12">
+
+          <div class="card card-outline card-info">
+            <div class="card-header" style = "padding-top: 6px;padding-bottom: 0px;">
+              <h4 class="card-title">
+                Registro de experiencia
+              </h4>
+              <!-- tools box -->
+
+              <!-- /. tools -->
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body pad">
+              <div class="mb-3">
+                <form id="myForm" class="form-horizontal" method="post">
+                  <div class="box-body">
+                      {% csrf_token %}
+
+                    {% for hidden_field in formA.hidden_fields %}
+                      {{ hidden_field }}
+                    {% endfor %}
+
+                    {% if formA.non_field_errors %}
+                      <div class="alert alert-danger" role="alert">
+                        {% for error in formA.non_field_errors %}
+                          {{ error }}
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                    {% for field in formA.visible_fields %}
+                      <div class="form-group row">
+                        <label for="{field}" class="col-sm-3 col-form-label">{{field.label_tag}}</label>
+                        {% if formA.is_bound %}
+                          {% if field.errors %}
+                            {% render_field field class="form-control is-invalid" %}
+                            {% for error in field.errors %}
+                              <div class="invalid-feedback">
+                                {{ error }}
+                              </div>
+                            {% endfor %}
+                          {% else %}
+                            {% render_field field class="form-control is-valid" %}
+                          {% endif %}
+                        {% else %}
+                        <div class="col-sm-9">
+                          {% render_field field class="form-control" %}
+                        </div>
+                        {% endif %}
+
+                        {% if field.help_text %}
+                          <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                      </div>
+                    {% endfor %}
+                  <div class="box-footer">
+                    <button class="btn btn-light back-list">Cancelar</button>
+                    <button type="submit" class="btn btn-success ">Registrar</button>
+                  </div>
+                  </div>
+                </form>   
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+
+{% endblock %}
+
+{% block javascript %}
+    <script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap-datepicker.es.min.js' %}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+        $(".back-list").click(function(ev){         
+            ev.preventDefault();
+            document.location.href = "/comun/empexplist/";
+        });
+        $('#id_fecha').datepicker({
+            format: 'dd/mm/yyyy',
+            startDate: '-3d'
+        });
+
+        $("#myForm").submit(function (e) {
+          e.preventDefault();
+          var serializedData = $(this).serialize() ;
+          $.ajax({
+              type: 'POST',
+              url: "{% url 'comun:empresa_exp_postajax' %}",
+              data: serializedData,
+              success: function (response) {
+                  Swal.fire({
+                  icon: "success",
+                  title: "Exito!",
+                  text: "Guardado satisfactoriamente",
+                  }).then(function(){
+                    $("#myForm").trigger('reset');
+                    document.location.href = "/comun/empexplist/";
+                  });
+              },
+              error: function (response) {
+                  var errorString = '';
+                  var resp = JSON.parse(response.responseText);
+                  console.log(response);
+                  $.each( resp.errors, function( key, value) {
+                      errorString += '<b>'+ key + '</b> <br/>'+ value + '<br/>';
+                  });
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    html: errorString,
+                  });
+              }
+          })
+      });
+  </script>
+{% endblock %}
+          
+          
+

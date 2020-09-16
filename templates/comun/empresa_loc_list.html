@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+{% block extrastatic %}
+<style>
+    .fa-camera {
+        color: white;
+    }
+</style>
+<link rel="stylesheet" href="{% static 'css/site.css' %}">
+{% endblock %}
+{% block content %}
+    <!-- For demo purpose -->
+    <div class="content" style="padding-top: 15px;">
+      <div class="col-md-12">
+
+          <div class="card card-outline card-info">
+            <div class="card-header" style = "padding-top: 6px;padding-bottom: 0px;">
+              <h4 class="card-title">
+                Registro de sedes &nbsp;<button class="btn btn-info btn-sm loc-add" data-toggle="tooltip" title="Agregar nuevo"><i class="fa fa-plus"></i> </button>
+              </h4>
+              <!-- tools box -->
+
+              <!-- /. tools -->
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body pad">
+              <div class="mb-3">
+                <table id="lista" class="table table-striped " cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th align="center">Tipo</th>
+                            <th align="center">Direccion</th>
+                            <th align="center">Distrito</th>
+                            <th align="center">Telefonos</th>
+                            <th align="center"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in locaciones %}
+                        <tr>
+                            <td>{{ row.empresa_locacion_tipo.nombre }}</td>
+                            <td>{{ row.direccion }}</td>
+                            <td>{{ row.distrito.nombre_completo }}</td>
+                            <td>{{ row.telefonos }}</td>
+                            <td>
+                                <a class="btn btn-warning btn-sm" title="Foto" onclick="enviaCorreoFoto({{row.id}}); return false;"><i class="fa fa-camera"></i> </a>
+                                <button class="btn btn-primary btn-sm" title="Ver" onClick="viewRow({{row.id}})"><i class="fa fa-eye"></i> </button>
+                                <button class="btn btn-success btn-sm" title="Modificar" onClick="editRow({{row.id}})"><i class="fa fa-edit"></i> </button>
+                                <button class="btn btn-danger btn-sm" title="Eliminar" onClick="delRow({{row.id}})"><i class="fa fa-remove"></i> </button>
+                            </td>                                
+                        </tr>
+                        {% endfor %}                 
+                    </tbody>
+                </table>
+            </div>
+            </div>
+          </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+        $(".loc-add").click(function(ev){         
+            ev.preventDefault();
+            document.location.href = "/comun/emplocadd/";
+        });
+        
+        function viewRow(id){
+            document.location.href = "/comun/emplocview/"+id;
+        }
+        function editRow(id){
+            document.location.href = "/comun/emplocedit/"+id;
+        }
+        function enviaCorreoFoto(id){
+            Swal.fire({
+                title: 'Proceder con el envío?',
+                text: "Se enviará un correo electronico con un enlace donde podra subir la foto de la locacion actual",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si, enviar!'
+                }).then((result) => {
+                    if (result.value) {
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                            },                            
+                            url: "{% url 'comun:empresa_loc_postajax_foto' id=9999 %}".replace("9999", id),
+                            success: function (response) {
+                                Swal.fire(
+                                    'Enviado!',
+                                    'El enlace fue enviado a su casilla de correo electrónico',
+                                    'success'
+                                );
+                            },
+                            error: function (){
+                                Swal.fire(
+                                    'Error!',
+                                    'Ocurrio un error al enviar el correo electrónico.',
+                                    'error'
+                                );
+                                
+                            },
+                    });
+                  }}
+                );
+        }
+
+        function delRow(id){
+            Swal.fire({
+                title: 'Estas seguro?',
+                text: "No podras revertir esta operación!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si, eliminar!'
+                }).then((result) => {
+                    if (result.value) {
+                        console.log('x');
+                        $.ajax({
+                            type: "DELETE",
+                            dataType: "json",
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                            },                            
+                            url: "{% url 'comun:empresa_loc_postajax_del' id=9999 %}".replace("9999", id),
+                            success: function (response) {
+                                Swal.fire(
+                                    'Eliminado!',
+                                    'El registro ha sido eliminado',
+                                    'success'
+                                ).then(function(){
+                                    $("#myForm").trigger('reset');
+                                    document.location.href = "/comun/emploclist/";
+                                });
+                            },
+                    });
+                  }}
+                );
+            //document.location.href = "/comun/emprepedit/"+id;
+        }
+</script>
+{% endblock %}

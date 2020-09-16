@@ -1,0 +1,43 @@
+{% extends "base_empty.html" %}
+{% load widget_tweaks %}
+{% load static %}
+{% block extrastatic %}
+<style>
+  img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  }
+</style>
+{% endblock %}
+
+
+{% block title %}Create an Account{% endblock %}
+
+{% block content %}
+<div class="hold-transition register-page">
+<div class="col-sm-6">
+  <div class="register-logo">
+    <!-- <img src="{% static 'images/logopymes.png' %}"> 
+    <a href="{% static 'images/logopymes.png' %}../../index2.html"><b>e</b>PYME</a>-->
+  </div>
+
+
+  <div class="card">
+    <div class="card-body register-card-body">
+              <div class="box-header with-border" style="text-align: center;">
+                <h3 class="box-title" >Bienvenido a eMYPE</h3>
+                <br>
+                <p style="color:#00a65a">Tu registro esta completo!</p> 
+                <br>
+                Para ingresar al portal haz click 
+                <a href='/comun'>aqui</a>
+              </div>
+            	
+    </div>
+    <!-- /.form-box -->
+  </div><!-- /.card -->
+</div>
+</div>
+<!-- /.register-box -->
+{% endblock %}

@@ -1,0 +1,143 @@
+{% load widget_tweaks %}
+
+<html>
+    <form id="form_add_doc" class="form-horizontal" action="{% url 'comun:empresa_exp_files_add' id %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for hidden_field in form.hidden_fields %}
+        {{ hidden_field }}
+      {% endfor %}
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger" role="alert">
+          {% for error in form.non_field_errors %}
+            {{ error }}
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% for field in form.visible_fields %}
+        <div class="form-group row">
+          <label for="{field}" class="col-sm-3 col-form-label">{{field.label_tag}}</label>
+          {% if form.is_bound %}
+            {% if field.errors %}
+              {% render_field field class="form-control is-invalid" %}
+              {% for error in field.errors %}
+                <div class="invalid-feedback">
+                  {{ error }}
+                </div>
+              {% endfor %}
+            {% else %}
+              {% render_field field class="form-control is-valid" %}
+            {% endif %}
+          {% else %}
+          <div class="col-sm-9">
+            {% render_field field class="form-control" %}
+          </div>
+          {% endif %}
+
+          {% if field.help_text %}
+            <small class="form-text text-muted">{{ field.help_text }}</small>
+          {% endif %}
+        </div>
+      {% endfor %}        
+      <button type="submit" class="btn btn-success ">Guardar</button>
+    </form>
+<br>
+
+                <table id="lista_sustentos" class="table table-striped " cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th align="center">Documento</th>
+                            <th align="center"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in sustentos %}
+                        <tr>
+                            <td><a href="{{row.documento.url}}" target="_blank">{{ row.descripcion }}</a></td>
+                            <td>
+                                <button class="btn btn-danger btn-sm" data-toggle="tooltip" title="Eliminar" onClick="delRow({{row.id}}, this)"><i class="fa fa-remove"></i> </button>
+                            </td>                                
+                        </tr>
+                        {% endfor %}                 
+                    </tbody>
+                </table>
+</html>
+<script type="text/javascript">
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+        $(".loc-add").click(function(ev){         
+            ev.preventDefault();
+            document.location.href = "/comun/empexpadd/";
+        });
+
+        // $('#form_add_doc').submit(function(e){
+        //     e.preventDefault();
+        //     frm = $(this)
+        //     $.ajax({
+        //         type: 'POST',
+        //         dataType:'json',
+        //         url: '/comun/empexpfilesadd/',
+        //         data: frm.serialize(),
+        //         async: false,
+        //         success: function (data) {
+        //             console.log('success')
+        //         },
+        //         error: function(data) {
+        //             console.log("Something went wrong!");
+        //         }
+        //     });
+        // });
+
+        function viewFile(id){
+            document.location.href = "/comun/empexpview/"+id;
+        }
+        function viewRow(id){
+            document.location.href = "/comun/empexpview/"+id;
+        }
+        function editRow(id){
+            document.location.href = "/comun/empexpedit/"+id;
+        }
+        function delRow(id, r){
+            Swal.fire({
+                title: 'Estas seguro?',
+                text: "No podras revertir esta operación!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si, eliminar!'
+                }).then((result) => {
+                    if (result.value) {
+                        $.ajax({
+                            url: '/comun/empexpfilesdel/' + id,
+                            type: "DELETE",
+                            dataType: "json",
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                            },
+                            success: function () {
+                                var i = r.parentNode.parentNode.rowIndex;
+                                document.getElementById("lista_sustentos").deleteRow(i);
+                                Swal.fire(
+                                    'Eliminado!',
+                                    'El registro ha sido eliminado',
+                                    'success'
+                                );                                    
+                            },
+                            error: function () {
+                                Swal.fire(
+                                    'Ocurrio un error!',
+                                    'El registro ha podido ser eliminado',
+                                    'error'
+                                );                                    
+                                },
+                            }
+                        );
+                        }
+                    });
+                }
+                          
+           //document.location.href = "/comun/emprepedit/"+id;
+
+</script>

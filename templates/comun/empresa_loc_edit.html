@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+{% block extrastatic %}
+<style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 600px;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 600px;
+        margin: 0;
+        padding: 0;
+      }
+</style>
+<link rel="stylesheet" href="{% static 'css/site.css' %}">
+{% endblock %}
+{% block content %}
+    <!-- For demo purpose -->
+    <div class="content" style="padding-top: 15px;">
+      <div class="col-md-12">
+
+          <div class="card card-outline card-info">
+            <div class="card-header" style = "padding-top: 6px;padding-bottom: 0px;">
+              <h4 class="card-title">
+                Registro de sedes
+              </h4>
+              <!-- tools box -->
+
+              <!-- /. tools -->
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body pad">
+              <div class="mb-3">
+                <form id="myForm" class="form-horizontal" method="post">
+                  <div class="box-body">
+                      {% csrf_token %}
+
+                    {% for hidden_field in formA.hidden_fields %}
+                      {{ hidden_field }}
+                    {% endfor %}
+
+                    {% if formA.non_field_errors %}
+                      <div class="alert alert-danger" role="alert">
+                        {% for error in formA.non_field_errors %}
+                          {{ error }}
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                    {% for field in formA.visible_fields %}
+                      <div class="form-group row">
+                        <label for="{field}" class="col-sm-3 col-form-label">{{field.label_tag}}</label>
+                        {% if formA.is_bound %}
+                          {% if field.errors %}
+                            {% render_field field class="form-control is-invalid" %}
+                            {% for error in field.errors %}
+                              <div class="invalid-feedback">
+                                {{ error }}
+                              </div>
+                            {% endfor %}
+                          {% else %}
+                            {% render_field field class="form-control is-valid" %}
+                          {% endif %}
+                        {% else %}
+                        <div class="col-sm-9">
+                          {% render_field field class="form-control" %}
+                        </div>
+                        {% endif %}
+
+                        {% if field.help_text %}
+                          <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                      </div>
+                    {% endfor %}
+                        <div id="map">
+                        </div>
+                        
+                        <div class="content">
+                            <button type="button" id="sidebarCollapse" class="btn navbar-btn" data-toggle="tooltip" data-placement="right" title="Ocultar / Mostrar barra lateral">
+                                <i class="glyphicon glyphicon-align-left"></i>
+                                <span></span>
+                            </button>
+                            <div class="container-fluid"></div>                    
+                            <button type="button" id="toggle-dragable" class="btn btn-layout"  data-toggle="tooltip" data-placement="right" title="Act. / Des. mover marcadores">
+                            <i class="fas fa-route" ></i>
+                            </button>
+                        </div>                    
+                    </div>
+                </div>
+                          
+                    <div class="box-footer">
+                    <button class="btn btn-light back-list" onclick="backList()">Cancelar</button>
+                    <button type="submit" class="btn btn-success ">Guardar</button>
+                  </div>
+                  </div>
+                </form>   
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+   
+
+
+
+
+{% endblock %}
+
+
+
+{% block javascript %}
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDcUZqNcqkQenRm8CLKcRDFjZl23O-UQJE">
+</script>
+    <script type="text/javascript">
+     var locations = {{ locations|safe }};
+     var bounds = new google.maps.LatLngBounds();
+     let map;
+     let markers = [];
+     
+      map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 17,
+        center: new google.maps.LatLng(-12.046374, -77.042793),
+        mapTypeId: google.maps.MapTypeId.HYBRID,
+        maxZoom: 20
+      });
+
+      var infowindow = new google.maps.InfoWindow();
+
+      var marker, i, position;
+      
+      for (i = 0; i < locations.length; i++) {
+        position = {lat: locations[0][1], lng: locations[0][2] }
+        marker = new google.maps.Marker({
+          position: position,
+          map: map
+        });
+        markers.push(marker);
+
+        map.addListener("click", event => {
+          deleteMarkers();
+          addMarker(event.latLng);
+        });
+
+
+        google.maps.event.addListener(marker, 'click', (function(marker, i) {
+          return function() {
+            infowindow.setContent(locations[i][0]);
+            infowindow.open(map, marker);
+          }
+        })(marker, i));
+      }
+      map.setCenter(position);
+
+      //map.fitBounds(bounds);
+      
+      function placeMarker(position, map) {
+          var marker = new google.maps.Marker({
+              position: position,
+              map: map
+          });
+          //map.panTo(position);
+      }
+      function clearMarkers() {
+        setMapOnAll(null);
+      }
+      function deleteMarkers() {
+        clearMarkers();
+        markers = [];
+      }
+      function setMapOnAll(map) {
+        for (let i = 0; i < markers.length; i++) {
+          markers[i].setMap(map);
+        }
+      }
+      function addMarker(location) {
+        const marker = new google.maps.Marker({
+          position: location,
+          map: map
+        });
+        document.getElementById("id_latitud").value = location.lat();
+        document.getElementById("id_longitud").value = location.lng();
+
+        //map.setCenter(marker.getPosition());
+        markers.push(marker);
+      }
+
+          $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+          });
+          $('.btn-layout').click(function() {
+            $(this).toggleClass("btn-layout-active");
+          });
+          $(".back-list").click(function(ev){         
+            ev.preventDefault();
+            document.location.href = "/comun/emploclist/";
+          });
+          $("#myForm").submit(function (e) {
+          e.preventDefault();
+          var serializedData = $(this).serialize() + '&id_row={{id_row}}';
+          $.ajax({
+              type: 'POST',
+              url: "{% url 'comun:empresa_loc_postajax' %}",
+              data: serializedData,
+              success: function (response) {
+                  Swal.fire({
+                  icon: "success",
+                  title: "Exito!",
+                  text: "Guardado satisfactoriamente",
+                  }).then(function(){
+                    $("#myForm").trigger('reset');
+                    document.location.href = "/comun/emploclist/";
+                  });
+              },
+              error: function (response) {
+                  var errorString = '';
+                  var resp = JSON.parse(response.responseText);
+                  console.log(response);
+                  $.each( resp.errors, function( key, value) {
+                      errorString += '<b>'+ key + '</b> <br/>'+ value + '<br/>';
+                  });
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    html: errorString,
+                  });
+              }
+          });
+      });
+
+</script>
+
+{% endblock %}
+          
+

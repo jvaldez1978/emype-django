@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+{% block extrastatic %}
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+{% endblock %}
+{% block content %}
+    <!-- For demo purpose -->
+    <div class="content" style="padding-top: 15px;">
+      <div class="col-md-12">
+
+          <div class="card card-outline card-info">
+            <div class="card-header" style = "padding-top: 6px;padding-bottom: 0px;">
+              <h4 class="card-title">
+                Registro de representantes &nbsp;<button class="btn btn-info btn-sm repr-add" data-toggle="tooltip" title="Agregar nuevo"><i class="fa fa-plus"></i> </button>
+              </h4>
+              <!-- tools box -->
+
+              <!-- /. tools -->
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body pad">
+              <div class="mb-3">
+                <table id="lista" class="table table-striped " cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th align="center">Tipo</th>
+                            <th align="center">Apellidos</th>
+                            <th align="center">Nombres</th>
+                            <th align="center">DNI</th>
+                            <th align="center">Email</th>
+                            <th align="center">Telefonos</th>
+                            <th align="center"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in representantes %}
+                        <tr>
+                            <td>{{ row.empresa_representante_tipo.nombre }}</td>
+                            <td>{{ row.apellidos }}</td>
+                            <td>{{ row.nombres }}</td>
+                            <td>{{ row.numero_documento_identidad }}</td>
+                            <td>{{ row.correo }}</td>
+                            <td>{{ row.telefonos }}</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" title="Ver" onClick="viewRow({{row.id}})"><i class="fa fa-eye"></i> </button>
+                                <button class="btn btn-success btn-sm" title="Modificar" onClick="editRow({{row.id}})"><i class="fa fa-edit"></i> </button>
+                                <button class="btn btn-danger btn-sm" title="Eliminar" onClick="delRow({{row.id}})"><i class="fa fa-remove"></i> </button>
+                            </td>                                
+                        </tr>
+                        {% endfor %}                 
+                    </tbody>
+                </table>
+            </div>
+            </div>
+          </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript">
+
+
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+        $(".repr-add").click(function(ev){         
+            ev.preventDefault();
+            document.location.href = "/comun/emprepadd/";
+        });
+        
+        function viewRow(id){
+            document.location.href = "/comun/emprepview/"+id;
+        }
+        function editRow(id){
+            document.location.href = "/comun/emprepedit/"+id;
+        }
+        function delRow(id){
+            Swal.fire({
+                title: 'Estas seguro?',
+                text: "No podras revertir esta operación!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si, eliminar!'
+                }).then((result) => {
+                    if (result.value) {
+                        console.log('x');
+                        $.ajax({
+                            type: "DELETE",
+                            dataType: "json",
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                            },                            
+                            url: "{% url 'comun:empresa_rep_postajax_del' id=9999 %}".replace("9999", id),
+                            success: function (response) {
+                                Swal.fire(
+                                    'Eliminado!',
+                                    'El registro ha sido eliminado',
+                                    'success'
+                                ).then(function(){
+                                    $("#myForm").trigger('reset');
+                                    document.location.href = "/comun/empreplist/";
+                                });
+                            },
+                    });
+                  }}
+                );
+            //document.location.href = "/comun/emprepedit/"+id;
+        }
+</script>
+{% endblock %}

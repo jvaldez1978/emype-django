@@ -1,0 +1,72 @@
+{% extends "base_empty.html" %}
+{% load widget_tweaks %}
+{% load static %}
+{% block extrastatic %}
+{% endblock %}
+
+
+{% block title %}Create an Account{% endblock %}
+
+{% block content %}
+<div class="hold-transition register-page">
+<div class="col-sm-12">
+  <div class="register-logo">
+	<br>
+    <h3>eMYPE</h3>
+  </div>
+
+  <div class="card">
+    <div class="card-body register-card-body">
+      <p class="login-box-msg">Registro de usuario</p>
+	    <form method="POST" class="form-group">
+		{% csrf_token %}
+		{% for hidden_field in formA.hidden_fields %}
+		  {{ hidden_field }}
+		{% endfor %}
+
+		{% if formA.non_field_errors %}
+		  <div class="alert alert-danger" role="alert">
+		    {% for error in formA.non_field_errors %}
+		      {{ error }}
+		    {% endfor %}
+		  </div>
+		{% endif %}
+
+			{% for field in form.visible_fields %}
+			  <div class="form-group row">
+			    <label for="{field}" class="col-sm-3 col-form-label">{{field.label_tag}}</label>
+			    {% if form.is_bound %}
+			      {% if field.errors %}
+			        {% render_field field class="form-control is-invalid" %}
+			        {% for error in field.errors %}
+			          <div class="invalid-feedback">
+			            {{ error }}
+			          </div>
+			        {% endfor %}
+			      {% else %}
+			        {% render_field field class="form-control is-valid" %}
+			      {% endif %}
+			    {% else %}
+			    <div class="col-sm-9">
+			      {% render_field field class="form-control" %}
+			    </div>
+			    {% endif %}
+
+			    {% if field.help_text %}
+			      <small class="form-text text-muted">{{ field.help_text }}</small>
+			    {% endif %}
+			  </div>
+			{% endfor %}
+		  <button type="submit" class="btn btn-success">Registrar</button>
+		</form>
+
+      <a href="/login" class="text-center">Ye estoy registrado</a>
+    </div>
+    <!-- /.form-box -->
+  </div><!-- /.card -->
+</div>
+</div>
+<!-- /.register-box -->
+{% endblock %}
+
+

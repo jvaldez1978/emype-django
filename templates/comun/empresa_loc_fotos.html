@@ -1,0 +1,46 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        
+    </style>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+</head>
+<body>
+    <div class="col-md-3">
+        <h3>{{mensaje}}</h3>
+                    <form method="post" autocomplete="off" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <input id="foto" type="file" class="" name="foto" accept="image/*;capture=camera">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Enviar</button>
+                    </form>
+                </div>
+</body>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+    // check for Geolocation support
+    function getPosition() {
+        var startPos;
+        navigator.geolocation.getCurrentPosition(function(position) {
+            startPos = position;
+            document.getElementById('startLat').innerHTML = startPos.coords.latitude;
+            document.getElementById('startLon').innerHTML = startPos.coords.longitude;
+        },
+        function(error) {
+            alert('Error occurred. Error code: ' + error.code);
+            // error.code can be:
+            //   0: unknown error
+            //   1: permission denied
+            //   2: position unavailable (error response from locaton provider)
+            //   3: timed out
+        });
+    };
+
+    if (navigator.geolocation == false) {
+        alert('Navegador no soportado por la aplicacion!');
+    }
+</script>

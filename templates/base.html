@@ -1,0 +1,110 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+  	<title>eMYPE</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+		
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    {% block extrastatic %}
+    {% endblock %}
+  </head>
+  <body>
+		
+		<div class="wrapper d-flex align-items-stretch">
+			<nav id="sidebar" >
+				<div class="custom-menu">
+					<button type="button" id="sidebarCollapse" class="btn btn-primary">
+	          <i class="fa fa-bars"></i>
+	          <span class="sr-only">Toggle Menu</span>
+	        </button>
+        </div>
+				<div class="p-4">
+          <h1><a href="index.html" class="logo">eMYPE</a></h1>
+          <hr>
+          {% if user.is_authenticated %}
+            <p>Bienvenido,  </p>           
+            <p>{{ user.first_name }} {{ user.last_name }}<br>
+            <label id="sd_nombre_empresa"></label></p>
+            <hr>
+            {% endif %}
+          <ul class="list-unstyled components mb-5">
+	          <!--<li class="active">
+	            <a href="{% url 'comun:home' %}"><span class="fa fa-home mr-3"></span> Inicio</a>
+	          </li>-->
+	          <li class="active">
+	              <a href="{% url 'comun:empresa_view' %}"><span class="fa fa-building mr-3"></span> Información general</a>
+	          </li>
+	          <li>
+              <a href="{% url 'comun:empresa_rep_list' %}"><span class="fa fa-group mr-3"></span> Representantes</a>
+	          </li>
+	          <li>
+              <a href="{% url 'comun:empresa_rubro_list' %}"><span class="fa fa-cogs mr-3"></span> Rubros</a>
+	          </li>
+	          <li>
+              <a href="{% url 'comun:empresa_loc_list' %}"><span class="fa fa-location-arrow mr-3"></span> Sedes</a>
+	          </li>
+	          <li>
+              <a href="{% url 'comun:empresa_exp_list' %}"><span class="fa fa-cogs mr-3"></span> Experiencia</a>
+	          </li>
+	          <li>
+              <a href="{% url 'comun:empresa_cert_list' %}"><span class="fa fa-certificate mr-3"></span> Certificaciones</a>
+	          </li>
+	          <li>
+              <a href="{% url 'comun:empresa_doc_list' %}"><span class="fa fa-cogs mr-3"></span> Archivos</a>
+	          </li>
+	          <li>
+              <a href="{% url 'comun:empresa_redes_list' %}"><span class="fa fa-at mr-3"></span> Redes sociales</a>
+	          </li>
+
+	        </ul>
+          <p><a href="{% url 'logout' %}"><span class="fa fa-sign-out"></span> Cerrar sesión</a></p>
+	        <div class="footer">
+	        	<p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+						  Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | TECOMSG</a>
+						  <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
+	        </div>
+
+	      </div>
+    	</nav>
+
+        <!-- Page Content  -->
+      <div id="content" class="p-2 pt-5">        
+        {% block content %}
+        {% endblock %}
+      </div>
+		</div>
+
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/popper.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <!--<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> -->
+
+    <script src="{% static 'js/sweetalert2.all.min.js' %}"></script>
+    <!-- Optional: include a polyfill for ES6 Promises for IE11 -->
+    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill"></script>
+
+    <script src="{% static 'js/main.js' %}"></script>
+    <script stype="text/javascript">
+      $(document).ready(function() {
+        $.ajax({
+          url: '/comun/ajax/getemp/',
+          dataType: 'json',
+          success: function (data) {
+            if (data.empresa) {
+              console.log(data);
+              $("#sd_nombre_empresa").html(data.empresa);
+            }
+          }
+        });
+      });        
+    </script>
+    {% block javascript %}
+    {% endblock %}
+  </body>
+</html>

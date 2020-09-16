@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+{% block extrastatic %}
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+{% endblock %}
+{% block content %}
+    <!-- For demo purpose -->
+    <div class="content" style="padding-top: 15px;">
+      <div class="col-md-12">
+
+          <div class="card card-outline card-info">
+            <div class="card-header" style = "padding-top: 6px;padding-bottom: 0px;">
+              <h4 class="card-title">
+                {{ empresa }}
+              </h4>
+              <!-- tools box -->
+
+          </div>
+      </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %}
+
+
+
+          
+

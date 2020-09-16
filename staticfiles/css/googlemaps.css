@@ -1,0 +1,42 @@
+#map {
+    height: 100%;
+    width: 100%;
+}
+
+
+.img_info {
+      max-width: 100% !important;
+    max-height: 100% !important;
+}
+
+.lnstripped {
+  background-color: #0e0f12;
+  /*padding: 0 90px;*/
+}
+
+.gm-style-iw {
+  width: 1200px; 
+  height: 620px;
+  background-color: #191c20;
+}
+
+/* CARROUSEL DE IMAGENES */
+
+.hide-bullets {
+    list-style:none;
+    margin-left: -40px;
+    margin-top:20px;
+}
+
+.thumbnail {
+    padding: 0;
+}
+
+.seleccionado {
+    border-color: red;
+}
+
+.carousel-inner>.item>img, .carousel-inner>.item>a>img {
+    width: 100%;
+}
+

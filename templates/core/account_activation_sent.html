@@ -1,0 +1,27 @@
+{% extends "base_empty.html" %}
+{% load widget_tweaks %}
+{% load static %}
+{% block extrastatic %}
+{% endblock %}
+
+
+{% block title %}Create an Account{% endblock %}
+
+{% block content %}
+<div class="hold-transition register-page">
+<div class="col-sm-6">
+  <div class="register-logo">
+    <a href="#"><b>e</b>MYPE</a>
+  </div>
+
+  <div class="card">
+    <div class="card-body register-card-body">
+      	<p class="login-box-msg"></p>
+      	El enlace de confirmacion ha sido enviado a su buzon de correo. Por favor ingrese al enlace para confirmar su direccion de su correo electronico y activar su cuenta en ePyme.
+    </div>
+    <!-- /.form-box -->
+  </div><!-- /.card -->
+</div>
+</div>
+<!-- /.register-box -->
+{% endblock %}

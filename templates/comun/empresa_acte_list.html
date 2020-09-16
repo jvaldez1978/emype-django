@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+{% block extrastatic %}
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+{% endblock %}
+{% block content %}
+    <!-- For demo purpose -->
+    <div class="content" style="padding-top: 15px;">
+      <div class="col-md-12">
+
+          <div class="card card-outline card-info">
+            <div class="card-header" style = "padding-top: 6px;padding-bottom: 0px;">
+              <h4 class="card-title">
+                Registro de actividades economicas &nbsp;<button class="btn btn-info btn-sm loc-add" data-toggle="tooltip" title="Agregar nuevo"><i class="fa fa-plus"></i> </button>
+              </h4>
+              <!-- tools box -->
+
+              <!-- /. tools -->
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body pad">
+              <div class="mb-3">
+                <table id="lista" class="table table-striped " cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th align="center">Codigo CIIU</th>
+                            <th align="center">Actividad Economica</th>
+                            <th align="center"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in actividades_economicas %}
+                        <tr>
+                            <td>{{ row.actividad_economica.codigo_ciiu }}</td>
+                            <td>{{ row.actividad_economica.nombre }}</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" title="Ver" onClick="viewRow({{row.id}})"><i class="fa fa-eye"></i> </button>
+                                <button class="btn btn-success btn-sm"  title="Modificar" onClick="editRow({{row.id}})"><i class="fa fa-edit"></i> </button>
+                                <button class="btn btn-danger btn-sm"  title="Eliminar" onClick="delRow({{row.id}})"><i class="fa fa-remove"></i> </button>
+                            </td>                                
+                        </tr>
+                        {% endfor %}                 
+                    </tbody>
+                </table>
+            </div>
+            </div>
+          </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+        $(".loc-add").click(function(ev){         
+            ev.preventDefault();
+            document.location.href = "/comun/empacteadd/";
+        });
+        
+        function viewRow(id){
+            document.location.href = "/comun/empacteview/"+id;
+        }
+        function editRow(id){
+            document.location.href = "/comun/empacteedit/"+id;
+        }
+        function delRow(id){
+            swal({
+            title: "Esta seguro?",
+            text: "Una vez eliminado no se podrá recuperar!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+            })
+            .then((willDelete) => {
+            if (willDelete) {
+                swal("Eliminado satisfactoriamente!", {
+                icon: "success",
+                });
+            } 
+            });
+            //document.location.href = "/comun/emprepedit/"+id;
+        }
+</script>
+{% endblock %}
